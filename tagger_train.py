@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import random
-from gensim.models import KeyedVectors
+from gensim.models import Word2Vec
 
 
 def prepare_sequence(seq, to_ix):
@@ -48,11 +48,10 @@ def read_data(path):
     return training_data, tags_set
 
 
-def load_embeddings(word_dict):
-    word_embeddings = np.zeros((len(word_dict), 300))
-    print("load")
-    model = KeyedVectors.load_word2vec_format('embeddings/GoogleNews-vectors-negative300.bin', binary=True)
-    print("start")
+def load_embeddings(data, word_dict):
+    model = Word2Vec(data, min_count=1, size=50, workers=3, window=3, sg=1)
+    word_embeddings = np.zeros((len(word_dict), 50))
+
     for word in word_dict:
         word_embeddings[word_dict[word]] = model[word]
         print(word)
@@ -72,6 +71,8 @@ def train_model(train_file, model_file):
             if word not in word_to_ix:
                 word_to_ix[word] = len(word_to_ix)
 
+    word_embeddings = load_embeddings([i[0] for i in training_data], word_to_ix)
+
     tag_to_ix = {}
     ix_to_tag = {}
     count = 0
@@ -85,16 +86,6 @@ def train_model(train_file, model_file):
 
 if __name__ == "__main__":
     # make no changes here
-    # train_file = sys.argv[1]
-    # model_file = sys.argv[2]
-    training_data, tags_set = read_data("./corpus.train")
-    print("finished")
-    word_to_ix = {}
-    print(len(training_data))
-    for sent, tags in training_data:
-        for word in sent:
-            if word not in word_to_ix:
-                word_to_ix[word] = len(word_to_ix)
-    print("start")
-    load_embeddings(word_to_ix)
-    # train_model(train_file, model_file)
+    train_file = sys.argv[1]
+    model_file = sys.argv[2]
+    train_model(train_file, model_file)
