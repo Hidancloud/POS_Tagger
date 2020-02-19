@@ -64,6 +64,7 @@ def char_embeddings():
     s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .!?:,\'%-\(\)/$|&;[]"'
     embeddings = np.array([hash(c) for c in s])
     embeddings /= np.max(embeddings)
+    embeddings = {s[i]: embeddings[i] for i in range(len(embeddings))}
     return embeddings
 
 
