@@ -60,6 +60,13 @@ def load_embeddings(data, word_dict):
     return word_embeddings
 
 
+def char_embeddings():
+    s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .!?:,\'%-\(\)/$|&;[]"'
+    embeddings = np.array([hash(c) for c in s])
+    embeddings /= np.max(embeddings)
+    return embeddings
+
+
 def train_model(train_file, model_file):
     # write your code here. You can add functions as well.
     # use torch library to save model parameters, hyperparameters, etc. to model_file
